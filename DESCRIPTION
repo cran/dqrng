@@ -1,7 +1,7 @@
 Package: dqrng
 Type: Package
 Title: Fast Pseudo Random Number Generators
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: c(
     person("Ralf", "Stubner", email = "ralf.stubner@daqana.com", role = c("aut", "cre")),
     person("daqana GmbH", role = "cph"),
@@ -32,7 +32,7 @@ VignetteBuilder: knitr
 URL: https://www.daqana.org/dqrng
 BugReports: https://github.com/daqana/dqrng/issues
 NeedsCompilation: yes
-Packaged: 2018-05-14 09:27:13 UTC; ralf
+Packaged: 2018-06-08 18:40:33 UTC; ralf
 Author: Ralf Stubner [aut, cre],
   daqana GmbH [cph],
   David Blackman [ctb],
@@ -40,4 +40,4 @@ Author: Ralf Stubner [aut, cre],
   Sebastiano Vigna [ctb]
 Maintainer: Ralf Stubner <ralf.stubner@daqana.com>
 Repository: CRAN
-Date/Publication: 2018-05-14 11:13:03 UTC
+Date/Publication: 2018-06-08 18:51:12 UTC
