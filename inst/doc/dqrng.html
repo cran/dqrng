@@ -12,14 +12,14 @@
 
 <meta name="author" content="Ralf Stubner" />
 
-<meta name="date" content="2018-06-08" />
+<meta name="date" content="2019-01-31" />
 
 <title>Fast Pseudo Random Number Generators for R</title>
 
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
@@ -55,7 +55,29 @@ code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
 code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
 code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -70,7 +92,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Fast Pseudo Random Number Generators for R</h1>
 <h4 class="author"><em>Ralf Stubner</em></h4>
-<h4 class="date"><em>2018-06-08</em></h4>
+<h4 class="date"><em>2019-01-31</em></h4>
 
 
 
@@ -82,31 +104,33 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><strong>Mersenne-Twister</strong><br />
 The 64 bit variant of the well-known Mersenne-Twister, which is also used as default. This is a conservative default that allows you to take advantage of the fast distribution functions provided by dqrng while staying close to R’s default RNG (32 bit Mersenne-Twister).</li>
 <li><strong>pcg64</strong> The default 64 bit variant from the PCG family developed by Melissa O’Neill. See <a href="http://www.pcg-random.org" class="uri">http://www.pcg-random.org</a> for more details.</li>
-<li><strong>Xoroshiro128+</strong> amd <strong>Xoshiro256+</strong><br />
+<li><strong>Xoroshiro128+</strong> and <strong>Xoshiro256+</strong><br />
 RNGs developed by David Blackman and Sebastiano Vigna. They are used as default RNGs in Erlang and Lua. See <a href="http://xoshiro.di.unimi.it/" class="uri">http://xoshiro.di.unimi.it/</a> for more details.</li>
+<li><strong>Threefry</strong><br />
+The 64 bit version of the 20 rounds Threefry engine (Salmon et al., 2011) as provided by the package ‘sitmo’.</li>
 </ul>
 <p>Of these RNGs Xoroshiro128+ is fastest and therefore used in the examples.</p>
 </div>
 <div id="usage-from-r" class="section level2">
 <h2>Usage from R</h2>
-<p>Using these RNGs from R is delibratly similar to using R’s build-in RNGs:</p>
+<p>Using these RNGs from R is deliberately similar to using R’s build-in RNGs:</p>
 <ul>
 <li><code>dqRNGkind()</code> is analogue to <code>RNGkind()</code> and sets the RNG</li>
 <li><code>dqset.seed()</code> is analogue to <code>set.seed()</code> and sets the seed</li>
-<li><code>dqrunif()</code>, <code>dqrnorm()</code>, and <code>dqrexp()</code> are analoge to <code>runif()</code>, <code>rnorm()</code>, and <code>rexp()</code> and sample from uniform, normal or exponenetial distributions</li>
+<li><code>dqrunif()</code>, <code>dqrnorm()</code>, and <code>dqrexp()</code> are analogue to <code>runif()</code>, <code>rnorm()</code>, and <code>rexp()</code> and sample from uniform, normal or exponential distributions</li>
 </ul>
 <p>Let’s look at the classical example of calculating <span class="math inline">\(\pi\)</span> via simulation. The basic idea is to generate a large number of random points within the unit square. An approximation for <span class="math inline">\(\pi\)</span> can then be calculated from the ratio of points within the unit circle to the total number of points. A vectorized implementation in R where we can switch the RNG might look like this:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">N &lt;-<span class="st"> </span><span class="fl">1e7</span>
-piR &lt;-<span class="st"> </span><span class="cf">function</span>(n, <span class="dt">rng =</span> runif) {
+piR &lt;-<span class="st"> </span>function(n, <span class="dt">rng =</span> runif) {
     x &lt;-<span class="st"> </span><span class="kw">rng</span>(n)
     y &lt;-<span class="st"> </span><span class="kw">rng</span>(n)
-    <span class="dv">4</span> <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(<span class="kw">sqrt</span>(x<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y<span class="op">^</span><span class="dv">2</span>) <span class="op">&lt;</span><span class="st"> </span><span class="fl">1.0</span>) <span class="op">/</span><span class="st"> </span>n
+    <span class="dv">4</span> *<span class="st"> </span><span class="kw">sum</span>(<span class="kw">sqrt</span>(x^<span class="dv">2</span> +<span class="st"> </span>y^<span class="dv">2</span>) &lt;<span class="st"> </span><span class="fl">1.0</span>) /<span class="st"> </span>n
 }
 <span class="kw">set.seed</span>(<span class="dv">42</span>)
 <span class="kw">system.time</span>(<span class="kw">cat</span>(<span class="st">&quot;pi ~= &quot;</span>, <span class="kw">piR</span>(N), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>))
 <span class="co">#&gt; pi ~=  3.140899</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.773   0.084   0.858</span></code></pre></div>
+<span class="co">#&gt;   0.748   0.092   0.839</span></code></pre></div>
 <p>Using dqrng is about three times faster:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dqrng)
 <span class="kw">dqRNGkind</span>(<span class="st">&quot;Xoroshiro128+&quot;</span>)
@@ -114,28 +138,28 @@ piR &lt;-<span class="st"> </span><span class="cf">function</span>(n, <span clas
 <span class="kw">system.time</span>(<span class="kw">cat</span>(<span class="st">&quot;pi ~= &quot;</span>, <span class="kw">piR</span>(N, <span class="dt">rng =</span> dqrunif), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>))
 <span class="co">#&gt; pi ~=  3.14227</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   1.668   0.085   1.753</span></code></pre></div>
+<span class="co">#&gt;   0.156   0.088   0.246</span></code></pre></div>
 <p>Since the calculations add a constant off-set, the speed-up for the RNGs alone has to be even greater:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">system.time</span>(<span class="kw">runif</span>(N))
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.287   0.012   0.299</span>
+<span class="co">#&gt;   0.276   0.012   0.287</span>
 <span class="kw">system.time</span>(<span class="kw">dqrunif</span>(N))
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.893   0.025   0.917</span></code></pre></div>
+<span class="co">#&gt;   0.040   0.020   0.059</span></code></pre></div>
 <p>Similar for the exponential distribution:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">system.time</span>(<span class="kw">rexp</span>(N))
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.503   0.056   0.559</span>
+<span class="co">#&gt;   0.452   0.032   0.483</span>
 <span class="kw">system.time</span>(<span class="kw">dqrexp</span>(N))
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   1.114   0.025   1.139</span></code></pre></div>
+<span class="co">#&gt;   0.052   0.024   0.076</span></code></pre></div>
 <p>And for the normal distribution:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">system.time</span>(<span class="kw">rnorm</span>(N))
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.660   0.013   0.672</span>
+<span class="co">#&gt;   0.696   0.024   0.719</span>
 <span class="kw">system.time</span>(<span class="kw">dqrnorm</span>(N))
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   1.113   0.028   1.141</span></code></pre></div>
+<span class="co">#&gt;   0.120   0.000   0.121</span></code></pre></div>
 </div>
 <div id="usage-from-c" class="section level2">
 <h2>Usage from C++</h2>
@@ -143,12 +167,12 @@ piR &lt;-<span class="st"> </span><span class="cf">function</span>(n, <span clas
 <ul>
 <li>use <code>// [[Rcpp::depends(dqrng)]]</code> together with <code>Rcpp::sourceCpp()</code></li>
 <li>use <code>Rcpp::cppFunction(depends = &quot;dqrng&quot;, ...)</code></li>
-<li>use an R pacakge with <code>LinkingTo: dqrng</code></li>
+<li>use an R package with <code>LinkingTo: dqrng</code></li>
 </ul>
 <p>Here only the first approach is shown.</p>
 <div id="using-the-compiled-library-functions" class="section level3">
 <h3>Using the compiled library functions</h3>
-<p>The functions available in R directly call corresponding C++ functions. These functions are also available at the C++ level if you include <code>dqrng.h</code>. Revisting the example of approximating <span class="math inline">\(\pi\)</span> we can use:</p>
+<p>The functions available in R directly call corresponding C++ functions. These functions are also available at the C++ level if you include <code>dqrng.h</code>. Revisiting the example of approximating <span class="math inline">\(\pi\)</span> we can use:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="co">// [[Rcpp::depends(dqrng)]]</span>
 <span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span>
 <span class="pp">#include </span><span class="im">&lt;dqrng.h&gt;</span>
@@ -170,7 +194,7 @@ piR &lt;-<span class="st"> </span><span class="cf">function</span>(n, <span clas
 <span class="co">/*** R</span>
 <span class="co">system.time(cat(&quot;pi ~= &quot;, piCpp(1e7), &quot;\n&quot;))</span>
 <span class="co">*/</span></code></pre></div>
-<p>Note that in C++ you have to use <code>dqrng::dqset_seed()</code>, whereas the anlogue function in the R interface is called <code>dqrng::dqset.seed()</code>.</p>
+<p>Note that in C++ you have to use <code>dqrng::dqset_seed()</code>, whereas the analogue function in the R interface is called <code>dqrng::dqset.seed()</code>.</p>
 </div>
 <div id="using-the-header-only-library" class="section level3">
 <h3>Using the header only library</h3>
@@ -205,17 +229,35 @@ Rcpp::NumericVector splitmix_rnorm(<span class="at">const</span> <span class="dt
 <span class="co">splitmix_rnorm(10)</span>
 <span class="co">system.time(splitmix_rnorm(1e7))</span>
 <span class="co">*/</span></code></pre></div>
-<p>Since SplitMix is a very fast RNG, the speed of this function is comparable to <code>dqrnorm</code>. Alternatively, you could combine the included RNGs together with dqrng’s tooling and some other distribution function. For example, this function generates random numbers according to the normal distribution using the standard library from C++11:</p>
+<p>Since SplitMix is a very fast RNG, the speed of this function is comparable to <code>dqrnorm</code>. Generally speaking you can use any C++11 compliant RNG with 64 bit output size. For example, here the 64 bit Threefry engine with 13 rounds from package sitmo is used:</p>
+<div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="pp">#include </span><span class="im">&lt;cstdint&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span>
+<span class="co">// [[Rcpp::depends(dqrng)]]</span>
+<span class="pp">#include </span><span class="im">&lt;dqrng_distribution.h&gt;</span>
+<span class="co">// [[Rcpp::depends(sitmo)]]</span>
+<span class="pp">#include </span><span class="im">&lt;threefry.h&gt;</span>
+
+<span class="co">// [[Rcpp::export]]</span>
+Rcpp::NumericVector threefry_rnorm(<span class="at">const</span> <span class="dt">int</span> n, <span class="at">const</span> <span class="dt">double</span> mean = <span class="fl">0.0</span>, <span class="at">const</span> <span class="dt">double</span> sd = <span class="fl">1.0</span>) {
+  <span class="kw">auto</span> rng = dqrng::generator&lt;sitmo::threefry_13_64&gt;(<span class="dv">42</span>);
+  dqrng::normal_distribution dist(mean, sd);
+  <span class="cf">return</span> dqrng::generate&lt;dqrng::normal_distribution, Rcpp::NumericVector&gt;(n, rng, dist);
+}
+<span class="co">/*** R</span>
+<span class="co">threefry_rnorm(10)</span>
+<span class="co">system.time(threefry_rnorm(1e7))</span>
+<span class="co">*/</span></code></pre></div>
+<p>Alternatively, you could combine the included RNGs together with dqrng’s tooling and some other distribution function. For example, this function generates random numbers according to the normal distribution using the standard library from C++11:</p>
 <div class="sourceCode"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="co">// [[Rcpp::plugins(cpp11)]]   </span>
 <span class="pp">#include </span><span class="im">&lt;random&gt;</span>
 <span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span>
 <span class="co">// [[Rcpp::depends(dqrng)]]</span>
 <span class="pp">#include </span><span class="im">&lt;dqrng_distribution.h&gt;</span>
-<span class="pp">#include </span><span class="im">&lt;xoroshiro.hpp&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;xoshiro.h&gt;</span>
 
 <span class="co">// [[Rcpp::export]]</span>
 Rcpp::NumericVector std_rnorm(<span class="at">const</span> <span class="dt">int</span> n, <span class="at">const</span> <span class="dt">double</span> mean = <span class="fl">0.0</span>, <span class="at">const</span> <span class="dt">double</span> sd = <span class="fl">1.0</span>) {
-  <span class="kw">auto</span> rng = dqrng::generator&lt;xoroshiro128plus_engine&gt;(<span class="dv">42</span>);
+  <span class="kw">auto</span> rng = dqrng::generator&lt;dqrng::xoroshiro128plus&gt;(<span class="dv">42</span>);
   <span class="bu">std::</span>normal_distribution&lt;<span class="dt">double</span>&gt; dist(mean, sd);
   <span class="cf">return</span> dqrng::generate&lt;<span class="bu">std::</span>normal_distribution&lt;<span class="dt">double</span>&gt;, Rcpp::NumericVector&gt;(n, rng, dist);
 }
