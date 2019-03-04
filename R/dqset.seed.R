@@ -7,7 +7,7 @@
 #'   \code{\link{set.seed}}, \code{\link{RNGkind}}, \code{\link{runif}},
 #'   \code{\link{rnorm}}, and \code{\link{rexp}}.
 #'
-#' @param seed  integer seed for the random number generator
+#' @param seed  integer scalar to seed the random number generator, or an integer vector of length 2 representing a 64-bit seed.
 #' @param kind  string specifying the RNG (see details)
 #' @param normal_kind  ignored; included for compatibility with \code{\link{RNGkind}}
 #' @param n  number of  observations
@@ -21,10 +21,6 @@
 #'
 #' @details Supported RNG kinds:
 #' \describe{
-#'   \item{Mersenne-Twister}{The 64 bit variant of the well-known Mersenne-Twister,
-#'    which is also used as default. This is a conservative default that allows
-#'    you to take advantage of the fast distribution functions provided by dqrng
-#'    while staying close to R's default RNG (32 bit Mersenne-Twister).}
 #'   \item{pcg64}{The default 64 bit variant from the PCG family developed by
 #'    Melissa O'Neill. See \url{http://www.pcg-random.org} for more details.}
 #'   \item{Xoroshiro128+ and Xoshiro256+}{RNGs developed by David Blackman and
@@ -34,16 +30,32 @@
 #'    provided by \code{\link[sitmo]{sitmo-package}}}
 #' }
 #'
+#' Xoroshiro128+ is the default since it is the fastest generator provided by
+#' this package.
+#'
 #' The functions \code{dqrnorm} and \code{dqrexp} use the Ziggurat algorithm as
 #' provided by \code{boost.random}.
+#'
+#' See \code{\link{generateSeedVectors}} for rapid generation of integer-vector
+#' seeds that provide 64 bits of entropy. These allow full exploration of
+#' the state space of the 64-bit RNGs provided in this package.
 #'
 #' @seealso \code{\link{set.seed}}, \code{\link{RNGkind}}, \code{\link{runif}},
 #'          \code{\link{rnorm}}, and \code{\link{rexp}}
 #'
 #' @examples
 #' library(dqrng)
-#' dqRNGkind("Xoroshiro128+")
+#'
+#' # Set custom RNG.
+#' dqRNGkind("Xoshiro256+")
+#'
+#' # Use an integer scalar to set a seed.
 #' dqset.seed(42)
+#'
+#' # Use an integer vector to set a seed.
+#' dqset.seed(c(31311L, 24123423L))
+#'
+#' # Random sampling from distributions.
 #' dqrunif(5, min = 2, max = 10)
 #' dqrexp(5, rate = 4)
 #' dqrnorm(5, mean = 5, sd = 3)

@@ -1,13 +1,14 @@
 Package: dqrng
 Type: Package
 Title: Fast Pseudo Random Number Generators
-Version: 0.0.5
+Version: 0.1.0
 Authors@R: c(
     person("Ralf", "Stubner", email = "ralf.stubner@daqana.com", role = c("aut", "cre")),
     person("daqana GmbH", role = "cph"),
     person("David Blackman", role = "ctb"),
     person("Melissa O'Neill", email = "oneill@pcg-random.org", role = "ctb"),
-    person("Sebastiano Vigna", email = "vigna@acm.org", role = "ctb")
+    person("Sebastiano Vigna", email = "vigna@acm.org", role = "ctb"),
+    person("Aaron", "Lun", role="ctb")
     )
 Description: Several fast random number generators are provided as C++
   header only libraries: The PCG family by O'Neill (2014
@@ -18,11 +19,10 @@ Description: Several fast random number generators are provided as C++
   are included. The latter two use the Ziggurat algorithm originally
   proposed by Marsaglia and Tsang (2000, <doi:10.18637/jss.v005.i08>).
   These functions are exported to R and as a C++ interface and are
-  enabled for use with the 64 bit version of the Mersenne-Twister by
-  Matsumoto and Nishimura (1998 <doi:10.1145/272991.272995>), the
-  default 64 bit generator from the PCG family, Xoroshiro128+ and Xoshiro256+
-  as well as the 64 bit version of the 20 rounds Threefry engine (Salmon et al.,
-  2011 <doi:10.1145/2063384.2063405>) as provided by the package 'sitmo'.
+  enabled for use with the default 64 bit generator from the PCG family,
+  Xoroshiro128+ and Xoshiro256+ as well as the 64 bit version of the 20 rounds
+  Threefry engine (Salmon et al., 2011 <doi:10.1145/2063384.2063405>) as
+  provided by the package 'sitmo'.
 License: AGPL-3 | file LICENSE
 Depends: R (>= 3.1.0)
 Imports: Rcpp (>= 0.12.16)
@@ -34,12 +34,13 @@ URL: https://www.daqana.org/dqrng, https://github.com/daqana/dqrng
 BugReports: https://github.com/daqana/dqrng/issues
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2019-01-31 18:41:45 UTC; ralf
+Packaged: 2019-03-04 12:51:28 UTC; ralf
 Author: Ralf Stubner [aut, cre],
   daqana GmbH [cph],
   David Blackman [ctb],
   Melissa O'Neill [ctb],
-  Sebastiano Vigna [ctb]
+  Sebastiano Vigna [ctb],
+  Aaron Lun [ctb]
 Maintainer: Ralf Stubner <ralf.stubner@daqana.com>
 Repository: CRAN
-Date/Publication: 2019-01-31 22:23:37 UTC
+Date/Publication: 2019-03-04 14:10:07 UTC
