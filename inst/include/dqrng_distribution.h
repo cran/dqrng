@@ -1,4 +1,4 @@
-// Copyright 2018 Ralf Stubner (daqana GmbH)
+// Copyright 2018-2019 Ralf Stubner (daqana GmbH)
 //
 // This file is part of dqrng.
 //
@@ -31,14 +31,6 @@ using uniform_distribution = boost::random::uniform_real_distribution<double>;
 // Boost's implementation uses the fast Ziggurat method
 using normal_distribution = boost::random::normal_distribution<double>;
 using exponential_distribution = boost::random::exponential_distribution<double>;
-
-template<typename DIST, typename RES>
-inline RES generate(size_t n, rng64_t rng, const DIST& dist) {
-  RES result(n);
-  auto gen = std::bind(dist, std::ref(*rng));
-  std::generate(result.begin(), result.end(), gen);
-  return result;
-}
 
 inline double uniform01(uint64_t x) {
   // prefer high bits due to weakness of lowest bits for xoshiro/xoroshiro with used "+" scrambler

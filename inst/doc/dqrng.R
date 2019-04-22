@@ -32,3 +32,9 @@ system.time(dqrexp(N))
 system.time(rnorm(N))
 system.time(dqrnorm(N))
 
+## ------------------------------------------------------------------------
+system.time(for (i in 1:100)   sample.int(N, N/100, replace = TRUE))
+system.time(for (i in 1:100) dqsample.int(N, N/100, replace = TRUE))
+system.time(for (i in 1:100)   sample.int(N, N/100))
+system.time(for (i in 1:100) dqsample.int(N, N/100))
+
