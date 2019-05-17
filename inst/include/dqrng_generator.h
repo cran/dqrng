@@ -18,7 +18,7 @@
 #ifndef DQRNG_GENERATOR_H
 #define DQRNG_GENERATOR_H 1
 
-#include <cstdint>
+#include <mystdint.h>
 #include <memory>
 #include <type_traits>
 #include <stdexcept>
@@ -151,27 +151,27 @@ public:
 };
 
 template<>
-void random_64bit_wrapper<::dqrng::xoroshiro128plus>::seed(result_type seed, result_type stream) {
+inline void random_64bit_wrapper<::dqrng::xoroshiro128plus>::seed(result_type seed, result_type stream) {
     gen.seed(seed);
     gen.jump(stream);
     cache = false;
 }
 
 template<>
-void random_64bit_wrapper<::dqrng::xoshiro256plus>::seed(result_type seed, result_type stream) {
+inline void random_64bit_wrapper<::dqrng::xoshiro256plus>::seed(result_type seed, result_type stream) {
     gen.seed(seed);
     gen.long_jump(stream);
     cache = false;
 }
 
 template<>
-void random_64bit_wrapper<pcg64>::seed(result_type seed, result_type stream) {
+inline void random_64bit_wrapper<pcg64>::seed(result_type seed, result_type stream) {
     gen.seed(seed, stream);
     cache = false;
 }
 
 template<>
-void random_64bit_wrapper<sitmo::threefry_20_64>::seed(result_type seed, result_type stream) {
+inline void random_64bit_wrapper<sitmo::threefry_20_64>::seed(result_type seed, result_type stream) {
     gen.seed(seed);
     gen.set_counter(0, 0, 0, stream);
     cache = false;
