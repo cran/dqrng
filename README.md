@@ -1,10 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[![Travis build
-status](https://travis-ci.org/daqana/dqrng.svg?branch=master)](https://travis-ci.org/daqana/dqrng)
-[![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/daqana/dqrng?branch=master&svg=true)](https://ci.appveyor.com/project/rstub/dqrng)
+[![R build
+status](https://github.com/daqana/dqrng/workflows/R-CMD-check/badge.svg)](https://github.com/daqana/dqrng/actions)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/dqrng)](https://cran.r-project.org/package=dqrng)
 [![Coverage
@@ -12,8 +10,6 @@ status](https://codecov.io/gh/daqana/dqrng/branch/master/graph/badge.svg)](https
 [![Downloads](https://cranlogs.r-pkg.org/badges/dqrng?color=brightgreen)](https://www.r-pkg.org/pkg/dqrng)
 [![CII Best
 Practices](https://bestpractices.coreinfrastructure.org/projects/2157/badge)](https://bestpractices.coreinfrastructure.org/projects/2157)
-[![Codacy
-Badge](https://api.codacy.com/project/badge/Grade/cc38be1f5900415a84010acd9ef85ce1)](https://www.codacy.com/app/rstub/dqrng?utm_source=github.com&utm_medium=referral&utm_content=daqana/dqrng&utm_campaign=Badge_Grade)
 [![Dependencies](https://tinyverse.netlify.com/badge/dqrng)](https://cran.r-project.org/package=dqrng)
 
 # dqrng
@@ -64,8 +60,8 @@ bm[, 1:4]
 #> # A tibble: 2 x 4
 #>   expression      min   median `itr/sec`
 #>   <bch:expr> <bch:tm> <bch:tm>     <dbl>
-#> 1 rnorm(N)      630µs  720.7µs     1366.
-#> 2 dqrnorm(N)   71.3µs   80.9µs    11897.
+#> 1 rnorm(N)    598.9µs    670µs     1414.
+#> 2 dqrnorm(N)   85.5µs     89µs     9663.
 ```
 
 This is also true for the provided sampling functions with replacement:
@@ -82,10 +78,10 @@ bm[, 1:4]
 #> # A tibble: 4 x 4
 #>   expression                                     min   median `itr/sec`
 #>   <bch:expr>                                <bch:tm> <bch:tm>     <dbl>
-#> 1 sample.int(m, n, replace = TRUE)            5.93ms   6.39ms      153.
-#> 2 sample.int(1000 * m, n, replace = TRUE)     7.26ms   7.85ms      127.
-#> 3 dqsample.int(m, n, replace = TRUE)        288.92µs 339.85µs     2774.
-#> 4 dqsample.int(1000 * m, n, replace = TRUE) 346.69µs 379.22µs     2369.
+#> 1 sample.int(m, n, replace = TRUE)            6.94ms   7.52ms      131.
+#> 2 sample.int(1000 * m, n, replace = TRUE)      8.8ms   9.64ms      101.
+#> 3 dqsample.int(m, n, replace = TRUE)        304.75µs 444.96µs     2207.
+#> 4 dqsample.int(1000 * m, n, replace = TRUE) 397.96µs 675.24µs     1502.
 ```
 
 And without replacement:
@@ -97,17 +93,16 @@ bm <- bench::mark(sample.int(m, n),
                   dqsample.int(m, n),
                   dqsample.int(1e3*m, n),
                   check = FALSE)
-#> Warning: Some expressions had a GC in every iteration; so filtering is
-#> disabled.
+#> Warning: Some expressions had a GC in every iteration; so filtering is disabled.
 bm[, 1:4]
 #> # A tibble: 5 x 4
 #>   expression                            min   median `itr/sec`
 #>   <bch:expr>                       <bch:tm> <bch:tm>     <dbl>
-#> 1 sample.int(m, n)                  34.22ms  36.02ms      26.0
-#> 2 sample.int(1000 * m, n)           11.99ms  12.97ms      72.6
-#> 3 sample.int(m, n, useHash = TRUE)    9.3ms  10.09ms      92.7
-#> 4 dqsample.int(m, n)                 1.34ms   1.49ms     596. 
-#> 5 dqsample.int(1000 * m, n)          1.69ms   2.03ms     434.
+#> 1 sample.int(m, n)                  38.59ms  51.73ms      19.6
+#> 2 sample.int(1000 * m, n)           11.98ms  15.34ms      63.9
+#> 3 sample.int(m, n, useHash = TRUE)   9.94ms  12.73ms      71.5
+#> 4 dqsample.int(m, n)               942.04µs   1.05ms     755. 
+#> 5 dqsample.int(1000 * m, n)          1.86ms   2.44ms     315.
 ```
 
 Note that sampling from `10^10` elements triggers “long-vector support”

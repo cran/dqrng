@@ -32,7 +32,7 @@ dqrng::rng64_t init() {
   Rcpp::IntegerVector seed(2, dqrng::R_random_int);
   return dqrng::generator(dqrng::convert_seed<uint64_t>(seed));
 }
-dqrng::rng64_t rng = init();
+dqrng::rng64_t rng = nullptr;
 
 using generator = double(*)();
 dqrng::uniform_distribution uniform{};
@@ -46,13 +46,18 @@ generator rexp_impl = [] () {return exponential(*rng);};
 // [[Rcpp::interfaces(r, cpp)]]
 
 // [[Rcpp::export(rng = false)]]
-void dqset_seed(Rcpp::IntegerVector seed, Rcpp::Nullable<Rcpp::IntegerVector> stream = R_NilValue) {
-  uint64_t _seed = dqrng::convert_seed<uint64_t>(seed);
-  if (stream.isNotNull()) {
-      uint64_t _stream = dqrng::convert_seed<uint64_t>(stream.as());
-    rng->seed(_seed, _stream);
+void dqset_seed(Rcpp::Nullable<Rcpp::IntegerVector> seed,
+                Rcpp::Nullable<Rcpp::IntegerVector> stream = R_NilValue) {
+  if (seed.isNull()) {
+    rng = init();
   } else {
-    rng->seed(_seed);
+    uint64_t _seed = dqrng::convert_seed<uint64_t>(seed.as());
+    if (stream.isNotNull()) {
+      uint64_t _stream = dqrng::convert_seed<uint64_t>(stream.as());
+      rng->seed(_seed, _stream);
+    } else {
+      rng->seed(_seed);
+    }
   }
 }
 
@@ -82,6 +87,10 @@ void dqRNGkind(std::string kind, const std::string& normal_kind = "ignored") {
 //' @export
 // [[Rcpp::export(rng = false)]]
 Rcpp::NumericVector dqrunif(size_t n, double min = 0.0, double max = 1.0) {
+  if (min > max)
+    Rcpp::stop("Error: 'min' must not be larger than 'max'!");
+  if (min == max)
+    return Rcpp::NumericVector(n, min);
   if(max / 2. - min / 2. > (std::numeric_limits<double>::max)() / 2.)
     return 2. * dqrunif(n, min/2., max/2.);
 
@@ -92,7 +101,11 @@ Rcpp::NumericVector dqrunif(size_t n, double min = 0.0, double max = 1.0) {
 
 // [[Rcpp::export(rng = false)]]
 double runif(double min = 0.0, double max = 1.0) {
-  if(max / 2. - min / 2. > (std::numeric_limits<double>::max)() / 2.)
+  if (min > max)
+    Rcpp::stop("'min' must not be larger than 'max'!");
+  if (min == max)
+    return min;
+  if (max / 2. - min / 2. > (std::numeric_limits<double>::max)() / 2.)
     return 2. * runif(min/2., max/2.);
 
   using parm_t = decltype(uniform)::param_type;

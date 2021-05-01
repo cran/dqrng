@@ -35,7 +35,7 @@ dqset.seed(seed, stream = NULL)
 
 \item{rate}{rate of the exponential distribution}
 
-\item{seed}{integer scalar to seed the random number generator, or an integer vector of length 2 representing a 64-bit seed.}
+\item{seed}{integer scalar to seed the random number generator, or an integer vector of length 2 representing a 64-bit seed. Maybe \code{NULL}, see details.}
 
 \item{stream}{integer used for selecting the RNG stream; either a scalar or a vector of length 2}
 }
@@ -54,10 +54,10 @@ The \code{dqrng} package provides several fast random number
 Supported RNG kinds:
 \describe{
   \item{pcg64}{The default 64 bit variant from the PCG family developed by
-   Melissa O'Neill. See \url{http://www.pcg-random.org} for more details.}
+   Melissa O'Neill. See \url{https://www.pcg-random.org/} for more details.}
   \item{Xoroshiro128+ and Xoshiro256+}{RNGs developed by David Blackman and
    Sebastiano Vigna. They are used as default RNGs in Erlang and Lua. See
-    \url{http://xoshiro.di.unimi.it/} for more details.}
+    \url{https://xoshiro.di.unimi.it/} for more details.}
   \item{Threefry}{The 64 bit version of the 20 rounds Threefry engine as
    provided by \code{\link[sitmo]{sitmo-package}}}
 }
@@ -71,6 +71,9 @@ provided by \code{boost.random}.
 See \code{\link{generateSeedVectors}} for rapid generation of integer-vector
 seeds that provide 64 bits of entropy. These allow full exploration of
 the state space of the 64-bit RNGs provided in this package.
+
+If the provided \code{seed} is \code{NULL}, a seed is genenrated from R's RNG
+without state alteration.
 }
 \examples{
 library(dqrng)
