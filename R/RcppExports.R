@@ -41,6 +41,12 @@ rexp <- function(rate = 1.0) {
     .Call(`_dqrng_rexp`, rate)
 }
 
+#' @rdname dqrng-functions
+#' @export
+dqrrademacher <- function(n) {
+    .Call(`_dqrng_dqrrademacher`, n)
+}
+
 dqsample_int <- function(m, n, replace = FALSE, probs = NULL, offset = 0L) {
     .Call(`_dqrng_dqsample_int`, m, n, replace, probs, offset)
 }
@@ -93,5 +99,5 @@ generateSeedVectors <- function(nseeds, nwords = 2L) {
 
 # Register entry points for exported C++ functions
 methods::setLoadAction(function(ns) {
-    .Call('_dqrng_RcppExport_registerCCallable', PACKAGE = 'dqrng')
+    .Call(`_dqrng_RcppExport_registerCCallable`)
 })
