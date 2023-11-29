@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -16,7 +16,7 @@ require(bench)
 #                    dqsample.int(1e4*m, n, replace = TRUE),
 #                    check = FALSE)
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 if (evaluate) {
   saveRDS(bm, "data/replacement.RDS")
 } else {
@@ -32,7 +32,7 @@ knitr::kable(bm[, 1:5])
 #                    dqsample.int(m, n),
 #                    check = FALSE, min_iterations = 50)
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 if (evaluate) {
   saveRDS(bm, "data/no-replacement-high.RDS")
 } else {
@@ -49,7 +49,7 @@ knitr::kable(bm[, 1:5])
 #                    dqsample.int(m, n),
 #                    check = FALSE)
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 if (evaluate) {
   saveRDS(bm, "data/no-replacement-medium.RDS")
 } else {
@@ -66,7 +66,7 @@ knitr::kable(bm[, 1:5])
 #                    dqsample.int(m, n),
 #                    check = FALSE)
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 if (evaluate) {
   saveRDS(bm, "data/no-replacement-low.RDS")
 } else {
@@ -82,7 +82,7 @@ knitr::kable(bm[, 1:5])
 #                    dqsample.int(m, n),
 #                    check = FALSE)
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 if (evaluate) {
   saveRDS(bm, "data/no-replacement-long.RDS")
 } else {
@@ -90,7 +90,7 @@ if (evaluate) {
 }
 knitr::kable(bm[, 1:5])
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  no_replace_shuffle <- function(m, n) {
 #    tmp <- seq_len(m)
 #    for (i in seq_len(n))
@@ -98,7 +98,7 @@ knitr::kable(bm[, 1:5])
 #    tmp[1:n]
 #  }
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  no_replace_set <- function(m, n) {
 #    result <- vector(mode = "...", length = n) # integer or numeric
 #    elems <- new(set, m, n) # set object for storing n objects out of m possible values

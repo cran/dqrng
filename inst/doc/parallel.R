@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  library(parallel)
 #  cl <- parallel::makeCluster(2)
 #  res <- clusterApply(cl, 1:8, function(stream, seed, N) {
