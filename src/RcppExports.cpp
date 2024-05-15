@@ -2,6 +2,7 @@
 // Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #include "../inst/include/dqrng.h"
+#include "../inst/include/dqrng_types.h"
 #include <Rcpp.h>
 #include <string>
 #include <set>
@@ -60,6 +61,70 @@ RcppExport SEXP _dqrng_dqRNGkind(SEXP kindSEXP, SEXP normal_kindSEXP) {
     SEXP rcpp_result_gen;
     {
         rcpp_result_gen = PROTECT(_dqrng_dqRNGkind_try(kindSEXP, normal_kindSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
+}
+// dqrng_get_state
+std::vector<std::string> dqrng_get_state();
+static SEXP _dqrng_dqrng_get_state_try() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    rcpp_result_gen = Rcpp::wrap(dqrng_get_state());
+    return rcpp_result_gen;
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _dqrng_dqrng_get_state() {
+    SEXP rcpp_result_gen;
+    {
+        rcpp_result_gen = PROTECT(_dqrng_dqrng_get_state_try());
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
+}
+// dqrng_set_state
+void dqrng_set_state(std::vector<std::string> state);
+static SEXP _dqrng_dqrng_set_state_try(SEXP stateSEXP) {
+BEGIN_RCPP
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type state(stateSEXP);
+    dqrng_set_state(state);
+    return R_NilValue;
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _dqrng_dqrng_set_state(SEXP stateSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        rcpp_result_gen = PROTECT(_dqrng_dqrng_set_state_try(stateSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -284,6 +349,38 @@ RcppExport SEXP _dqrng_rexp(SEXP rateSEXP) {
     UNPROTECT(1);
     return rcpp_result_gen;
 }
+// get_rng
+Rcpp::XPtr<dqrng::random_64bit_generator> get_rng();
+static SEXP _dqrng_get_rng_try() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    rcpp_result_gen = Rcpp::wrap(get_rng());
+    return rcpp_result_gen;
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _dqrng_get_rng() {
+    SEXP rcpp_result_gen;
+    {
+        rcpp_result_gen = PROTECT(_dqrng_get_rng_try());
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    bool rcpp_isLongjump_gen = Rcpp::internal::isLongjumpSentinel(rcpp_result_gen);
+    if (rcpp_isLongjump_gen) {
+        Rcpp::internal::resumeJump(rcpp_result_gen);
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
+}
 // dqrrademacher
 Rcpp::IntegerVector dqrrademacher(size_t n);
 static SEXP _dqrng_dqrrademacher_try(SEXP nSEXP) {
@@ -318,23 +415,23 @@ RcppExport SEXP _dqrng_dqrrademacher(SEXP nSEXP) {
     return rcpp_result_gen;
 }
 // dqsample_int
-Rcpp::IntegerVector dqsample_int(int m, int n, bool replace, Rcpp::Nullable<Rcpp::NumericVector> probs, int offset);
-static SEXP _dqrng_dqsample_int_try(SEXP mSEXP, SEXP nSEXP, SEXP replaceSEXP, SEXP probsSEXP, SEXP offsetSEXP) {
+Rcpp::IntegerVector dqsample_int(int n, int size, bool replace, Rcpp::Nullable<Rcpp::NumericVector> probs, int offset);
+static SEXP _dqrng_dqsample_int_try(SEXP nSEXP, SEXP sizeSEXP, SEXP replaceSEXP, SEXP probsSEXP, SEXP offsetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type size(sizeSEXP);
     Rcpp::traits::input_parameter< bool >::type replace(replaceSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type probs(probsSEXP);
     Rcpp::traits::input_parameter< int >::type offset(offsetSEXP);
-    rcpp_result_gen = Rcpp::wrap(dqsample_int(m, n, replace, probs, offset));
+    rcpp_result_gen = Rcpp::wrap(dqsample_int(n, size, replace, probs, offset));
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _dqrng_dqsample_int(SEXP mSEXP, SEXP nSEXP, SEXP replaceSEXP, SEXP probsSEXP, SEXP offsetSEXP) {
+RcppExport SEXP _dqrng_dqsample_int(SEXP nSEXP, SEXP sizeSEXP, SEXP replaceSEXP, SEXP probsSEXP, SEXP offsetSEXP) {
     SEXP rcpp_result_gen;
     {
-        rcpp_result_gen = PROTECT(_dqrng_dqsample_int_try(mSEXP, nSEXP, replaceSEXP, probsSEXP, offsetSEXP));
+        rcpp_result_gen = PROTECT(_dqrng_dqsample_int_try(nSEXP, sizeSEXP, replaceSEXP, probsSEXP, offsetSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -355,23 +452,23 @@ RcppExport SEXP _dqrng_dqsample_int(SEXP mSEXP, SEXP nSEXP, SEXP replaceSEXP, SE
     return rcpp_result_gen;
 }
 // dqsample_num
-Rcpp::NumericVector dqsample_num(double m, double n, bool replace, Rcpp::Nullable<Rcpp::NumericVector> probs, int offset);
-static SEXP _dqrng_dqsample_num_try(SEXP mSEXP, SEXP nSEXP, SEXP replaceSEXP, SEXP probsSEXP, SEXP offsetSEXP) {
+Rcpp::NumericVector dqsample_num(double n, double size, bool replace, Rcpp::Nullable<Rcpp::NumericVector> probs, int offset);
+static SEXP _dqrng_dqsample_num_try(SEXP nSEXP, SEXP sizeSEXP, SEXP replaceSEXP, SEXP probsSEXP, SEXP offsetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< double >::type m(mSEXP);
     Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type size(sizeSEXP);
     Rcpp::traits::input_parameter< bool >::type replace(replaceSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type probs(probsSEXP);
     Rcpp::traits::input_parameter< int >::type offset(offsetSEXP);
-    rcpp_result_gen = Rcpp::wrap(dqsample_num(m, n, replace, probs, offset));
+    rcpp_result_gen = Rcpp::wrap(dqsample_num(n, size, replace, probs, offset));
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _dqrng_dqsample_num(SEXP mSEXP, SEXP nSEXP, SEXP replaceSEXP, SEXP probsSEXP, SEXP offsetSEXP) {
+RcppExport SEXP _dqrng_dqsample_num(SEXP nSEXP, SEXP sizeSEXP, SEXP replaceSEXP, SEXP probsSEXP, SEXP offsetSEXP) {
     SEXP rcpp_result_gen;
     {
-        rcpp_result_gen = PROTECT(_dqrng_dqsample_num_try(mSEXP, nSEXP, replaceSEXP, probsSEXP, offsetSEXP));
+        rcpp_result_gen = PROTECT(_dqrng_dqsample_num_try(nSEXP, sizeSEXP, replaceSEXP, probsSEXP, offsetSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -410,12 +507,15 @@ static int _dqrng_RcppExport_validate(const char* sig) {
     if (signatures.empty()) {
         signatures.insert("void(*dqset_seed)(Rcpp::Nullable<Rcpp::IntegerVector>,Rcpp::Nullable<Rcpp::IntegerVector>)");
         signatures.insert("void(*dqRNGkind)(std::string,const std::string&)");
+        signatures.insert("std::vector<std::string>(*dqrng_get_state)()");
+        signatures.insert("void(*dqrng_set_state)(std::vector<std::string>)");
         signatures.insert("Rcpp::NumericVector(*dqrunif)(size_t,double,double)");
         signatures.insert("double(*runif)(double,double)");
         signatures.insert("Rcpp::NumericVector(*dqrnorm)(size_t,double,double)");
         signatures.insert("double(*rnorm)(double,double)");
         signatures.insert("Rcpp::NumericVector(*dqrexp)(size_t,double)");
         signatures.insert("double(*rexp)(double)");
+        signatures.insert("Rcpp::XPtr<dqrng::random_64bit_generator>(*get_rng)()");
         signatures.insert("Rcpp::IntegerVector(*dqrrademacher)(size_t)");
         signatures.insert("Rcpp::IntegerVector(*dqsample_int)(int,int,bool,Rcpp::Nullable<Rcpp::NumericVector>,int)");
         signatures.insert("Rcpp::NumericVector(*dqsample_num)(double,double,bool,Rcpp::Nullable<Rcpp::NumericVector>,int)");
@@ -427,12 +527,15 @@ static int _dqrng_RcppExport_validate(const char* sig) {
 RcppExport SEXP _dqrng_RcppExport_registerCCallable() { 
     R_RegisterCCallable("dqrng", "_dqrng_dqset_seed", (DL_FUNC)_dqrng_dqset_seed_try);
     R_RegisterCCallable("dqrng", "_dqrng_dqRNGkind", (DL_FUNC)_dqrng_dqRNGkind_try);
+    R_RegisterCCallable("dqrng", "_dqrng_dqrng_get_state", (DL_FUNC)_dqrng_dqrng_get_state_try);
+    R_RegisterCCallable("dqrng", "_dqrng_dqrng_set_state", (DL_FUNC)_dqrng_dqrng_set_state_try);
     R_RegisterCCallable("dqrng", "_dqrng_dqrunif", (DL_FUNC)_dqrng_dqrunif_try);
     R_RegisterCCallable("dqrng", "_dqrng_runif", (DL_FUNC)_dqrng_runif_try);
     R_RegisterCCallable("dqrng", "_dqrng_dqrnorm", (DL_FUNC)_dqrng_dqrnorm_try);
     R_RegisterCCallable("dqrng", "_dqrng_rnorm", (DL_FUNC)_dqrng_rnorm_try);
     R_RegisterCCallable("dqrng", "_dqrng_dqrexp", (DL_FUNC)_dqrng_dqrexp_try);
     R_RegisterCCallable("dqrng", "_dqrng_rexp", (DL_FUNC)_dqrng_rexp_try);
+    R_RegisterCCallable("dqrng", "_dqrng_get_rng", (DL_FUNC)_dqrng_get_rng_try);
     R_RegisterCCallable("dqrng", "_dqrng_dqrrademacher", (DL_FUNC)_dqrng_dqrrademacher_try);
     R_RegisterCCallable("dqrng", "_dqrng_dqsample_int", (DL_FUNC)_dqrng_dqsample_int_try);
     R_RegisterCCallable("dqrng", "_dqrng_dqsample_num", (DL_FUNC)_dqrng_dqsample_num_try);
@@ -443,12 +546,15 @@ RcppExport SEXP _dqrng_RcppExport_registerCCallable() {
 static const R_CallMethodDef CallEntries[] = {
     {"_dqrng_dqset_seed", (DL_FUNC) &_dqrng_dqset_seed, 2},
     {"_dqrng_dqRNGkind", (DL_FUNC) &_dqrng_dqRNGkind, 2},
+    {"_dqrng_dqrng_get_state", (DL_FUNC) &_dqrng_dqrng_get_state, 0},
+    {"_dqrng_dqrng_set_state", (DL_FUNC) &_dqrng_dqrng_set_state, 1},
     {"_dqrng_dqrunif", (DL_FUNC) &_dqrng_dqrunif, 3},
     {"_dqrng_runif", (DL_FUNC) &_dqrng_runif, 2},
     {"_dqrng_dqrnorm", (DL_FUNC) &_dqrng_dqrnorm, 3},
     {"_dqrng_rnorm", (DL_FUNC) &_dqrng_rnorm, 2},
     {"_dqrng_dqrexp", (DL_FUNC) &_dqrng_dqrexp, 2},
     {"_dqrng_rexp", (DL_FUNC) &_dqrng_rexp, 1},
+    {"_dqrng_get_rng", (DL_FUNC) &_dqrng_get_rng, 0},
     {"_dqrng_dqrrademacher", (DL_FUNC) &_dqrng_dqrrademacher, 1},
     {"_dqrng_dqsample_int", (DL_FUNC) &_dqrng_dqsample_int, 5},
     {"_dqrng_dqsample_num", (DL_FUNC) &_dqrng_dqsample_num, 5},
@@ -457,7 +563,9 @@ static const R_CallMethodDef CallEntries[] = {
     {NULL, NULL, 0}
 };
 
+void dqrng_init(DllInfo *dll);
 RcppExport void R_init_dqrng(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
+    dqrng_init(dll);
 }

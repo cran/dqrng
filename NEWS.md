@@ -1,8 +1,30 @@
-# dgrng 0.3.2
+# dqrng 0.4.0
+
+## Breaking changes
+
+* The default RNG has changed from Xoroshiro128+ to Xoroshiro128++. The older generators Xoroshiro128+ and Xoshiro256+ are still available but should only be used for backward compatibility or for generating floating point numbers, i.e. not sampling etc.  ([#57](https://github.com/daqana/dqrng/pull/57) fixing [#56](https://github.com/daqana/dqrng/issues/56))
+* The `dqrng::rng64_t` type has been changed to use `Rcpp::XPtr` instead of `std::shared_ptr` and the functions from `dqrng_sample.h` now expect a reference to `dqrng::random_64bit_generator` instead of `dqrng::rng64_t` ([#70](https://github.com/daqana/dqrng/pull/70) fixing [#63](https://github.com/daqana/dqrng/issues/63))
+
+## Other changes
+
+* Decoupled the 'sitmo' package. It is now possible to use, e.g., the distribution functions from the header-only library without having an explicit `LinkingTo: sitmo`.
+* Make the internal RNG accessible from the outside (Henrik Sloot fixing [#41](https://github.com/daqana/dqrng/issues/41) in [#58](https://github.com/daqana/dqrng/pull/58))
+* Add Xoroshiro128\*\*/++ and Xoshiro256\*\*/++ to `xoshiro.h`
+* Allow uniform and normal distributions to be registered as user-supplied RNG within R. This happens automatically if the option `dqrng.register_methods` is set to `TRUE`.
+* Add missing inline attributes and limit the included Rcpp headers in `dqrng_types.h` ([#75](https://github.com/daqana/dqrng/pull/75) together with Paul Liétar)
+* Add I/O methods for the RNG's internal state (fixing [#66](https://github.com/daqana/dqrng/issues/66) in [#78](https://github.com/daqana/dqrng/pull/78))
+* Extend `random_64bit_generator` with additional convenience methods (fixing [#64](https://github.com/daqana/dqrng/issues/64) in [#79](https://github.com/daqana/dqrng/pull/79))
+    * A `clone(stream)` method to allow using the global RNG state for parallel computation. Note that for consistency with the other provided RNGs, `stream` is counted relative to the current stream for PCG64.
+    * New methods `variate<dist>(param)`, `generate<dist>(container, param)` etc. using and inspired by [`randutils`](https://www.pcg-random.org/posts/ease-of-use-without-loss-of-power.html).
+* The scalar functions `dqrng::runif`, `dqrng::rnorm` and `dqrng::rexp` available from `dqrng.h` have been deprecated and will be removed in a future release. Please use the more flexible and faster `dqrng::random_64bit_accessor` together with `variate<Dist>()` instead. The same applies to `dqrng::uniform01` from `dqrng_distribution.h`, which can be replaced by the member function `dqrng::random_64bit_generator::uniform01`. 
+* New template function `dqrng::extra::parallel_generate` in `dqrng_extra/parallel_generate.h` as an example for using the global RNG in a parallel context (fixing [#77](https://github.com/daqana/dqrng/issues/77) in [#82](https://github.com/daqana/dqrng/issues/82) together with Philippe Grosjean)
+
+
+# dqrng 0.3.2
 
 * Recreate RcppExports.cpp with current development version of Rcpp to fix WARN on CRAN
 
-# dgrng 0.3.1
+# dqrng 0.3.1
 
 * new method `dqrrademacher` for drawing Rademacher weights (Kyle Butts in [#50](https://github.com/daqana/dqrng/pull/50) fixing [#49](https://github.com/daqana/dqrng/pull/49))
 * Move sampling methods to separate header file, allowing for parallel usage.
@@ -26,7 +48,7 @@
 # dqrng 0.2.1
 
 * Make template specialisations `inline` and include required standard headers (Aaron Lun in [#29](https://github.com/daqana/dqrng/pull/29) fixing [#28](https://github.com/daqana/dqrng/issues/28))
-* Add workaraound for new C++ compiler with old libc ([#30](https://github.com/daqana/dqrng/pull/30) fixing [#27](https://github.com/daqana/dqrng/issues/27))
+* Add workaround for new C++ compiler with old libc ([#30](https://github.com/daqana/dqrng/pull/30) fixing [#27](https://github.com/daqana/dqrng/issues/27))
 * update maintainer's email address
 
 # dqrng 0.2.0
@@ -73,7 +95,7 @@
 * Fix critical bug w.r.t. setting seeds
 * Use time in addition to `std::random_device` as source of the default seed, since
   `std::random_device` is deterministic with MinGW (c.f. #2)
-* Add jump() method to Xoshiro256+ and Xorohiro128+
+* Add jump() method to Xoshiro256+ and Xoroshiro128+
 * New vignette on parallel usage
 
 # dqrng 0.0.3

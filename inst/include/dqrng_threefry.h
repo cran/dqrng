@@ -1,5 +1,5 @@
-// Copyright 2023 Ralf Stubner
-// Copyright 2023 Henrik Sloot
+// Copyright 2018-2019 Ralf Stubner (daqana GmbH)
+// Copyright 2023-2024 Ralf Stubner
 //
 // This file is part of dqrng.
 //
@@ -16,12 +16,27 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with dqrng.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef dqrng_H
-#define dqrng_H
+#ifndef DQRNG_THREEFRY_H
+#define DQRNG_THREEFRY_H 1
 
-#include "dqrng_RcppExports.h"
+#include <sstream>
+#include <vector>
+#include <threefry.h>
+#include <dqrng_generator.h>
 
 namespace dqrng {
-inline random_64bit_accessor::random_64bit_accessor() : gen(dqrng::get_rng()) {}
+
+template<>
+inline void random_64bit_wrapper<sitmo::threefry_20_64>::set_stream(result_type stream) {
+  uint64_t number;
+  std::vector<uint64_t> state;
+  std::stringstream iss;
+  iss << gen;
+  while (iss >> number)
+    state.push_back(number);
+  // state[4:7] is the current counter, the highest part is incremented by stream
+  gen.set_counter(state[4], state[5], state[6], state[7] + stream);
+}
 } // namespace dqrng
-#endif // dqrng_H
+
+#endif // DQRNG_THREEFRY_H

@@ -2,6 +2,8 @@
 % Please edit documentation in R/RcppExports.R, R/dqset.seed.R
 \name{dqRNGkind}
 \alias{dqRNGkind}
+\alias{dqrng_get_state}
+\alias{dqrng_set_state}
 \alias{dqrunif}
 \alias{dqrnorm}
 \alias{dqrexp}
@@ -10,6 +12,10 @@
 \title{R interface}
 \usage{
 dqRNGkind(kind, normal_kind = "ignored")
+
+dqrng_get_state()
+
+dqrng_set_state(state)
 
 dqrunif(n, min = 0, max = 1)
 
@@ -25,6 +31,8 @@ dqset.seed(seed, stream = NULL)
 \item{kind}{string specifying the RNG (see details)}
 
 \item{normal_kind}{ignored; included for compatibility with \code{\link{RNGkind}}}
+
+\item{state}{character vector representation of the RNG's internal state}
 
 \item{n}{number of  observations}
 
@@ -43,7 +51,9 @@ dqset.seed(seed, stream = NULL)
 \item{stream}{integer used for selecting the RNG stream; either a scalar or a vector of length 2}
 }
 \value{
-\code{dqrunif}, \code{dqrnorm}, and \code{dqrexp} return a numeric vector of length \code{n}. \code{dqrrademacher} returns an integer vector of length \code{n}.
+\code{dqrunif}, \code{dqrnorm}, and \code{dqrexp} return a numeric vector
+ of length \code{n}. \code{dqrrademacher} returns an integer vector of length \code{n}.
+ \code{dqrng_get_state} returns a character vector representation of the RNG's internal state.
 }
 \description{
 The \code{dqrng} package provides several fast random number
@@ -51,27 +61,34 @@ The \code{dqrng} package provides several fast random number
   according to a uniform, normal and exponential distribution. These
   functions are modeled after the \code{base} functions
   \code{\link{set.seed}}, \code{\link{RNGkind}}, \code{\link{runif}},
-  \code{\link{rnorm}}, and \code{\link{rexp}}.
+  \code{\link{rnorm}}, and \code{\link{rexp}}. However, note that the functions
+  provided here do not accept vector arguments for the number of observations
+  as well as the parameters describing the distribution functions. Please see
+  \code{\link{register_methods}} if you need this functionality.
 
   \code{dqrrademacher} uses a fast algorithm to generate random
   Rademacher variables (-1 and 1 with equal probability). To do so, it
   generates a random 64 bit integer and then uses each bit to generate
   a 0/1 variable. This generates 64 integers per random number generation.
+
+  \code{dqrng_get_state} and \code{dqrng_set_state} can be used to get and set
+  the RNG's internal state. The character vector should not be manipulated directly.
 }
 \details{
 Supported RNG kinds:
 \describe{
   \item{pcg64}{The default 64 bit variant from the PCG family developed by
    Melissa O'Neill. See \url{https://www.pcg-random.org/} for more details.}
-  \item{Xoroshiro128+ and Xoshiro256+}{RNGs developed by David Blackman and
-   Sebastiano Vigna. They are used as default RNGs in Erlang and Lua. See
-    \url{https://xoshiro.di.unimi.it/} for more details.}
+  \item{Xoroshiro128++ and Xoshiro256++}{RNGs developed by David Blackman and
+   Sebastiano Vigna. See \url{https://prng.di.unimi.it/} for more details.
+   The older generators Xoroshiro128+ and Xoshiro256+ should be used only for
+   backwards compatibility.}
   \item{Threefry}{The 64 bit version of the 20 rounds Threefry engine as
    provided by \code{\link[sitmo]{sitmo-package}}}
 }
 
-Xoroshiro128+ is the default since it is the fastest generator provided by
-this package.
+Xoroshiro128++ is the default since it is fast, small and has good statistical
+properties.
 
 The functions \code{dqrnorm} and \code{dqrexp} use the Ziggurat algorithm as
 provided by \code{boost.random}.
@@ -87,7 +104,7 @@ without state alteration.
 library(dqrng)
 
 # Set custom RNG.
-dqRNGkind("Xoshiro256+")
+dqRNGkind("Xoshiro256++")
 
 # Use an integer scalar to set a seed.
 dqset.seed(42)
@@ -105,6 +122,13 @@ dqset.seed(c(31311L, 24123423L), 123)
 dqrunif(5, min = 2, max = 10)
 dqrexp(5, rate = 4)
 dqrnorm(5, mean = 5, sd = 3)
+
+# get and restore the state
+(state <- dqrng_get_state())
+dqrunif(5)
+dqrng_set_state(state)
+dqrunif(5)
+
 }
 \seealso{
 \code{\link{set.seed}}, \code{\link{RNGkind}}, \code{\link{runif}},

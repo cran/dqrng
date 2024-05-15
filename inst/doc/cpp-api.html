@@ -12,7 +12,7 @@
 
 <meta name="author" content="Ralf Stubner" />
 
-<meta name="date" content="2023-11-29" />
+<meta name="date" content="2024-05-12" />
 
 <title>C++ API</title>
 
@@ -51,7 +51,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">C++ API</h1>
 <h4 class="author">Ralf Stubner</h4>
-<h4 class="date">2023-11-29</h4>
+<h4 class="date">2024-05-12</h4>
 
 
 
@@ -354,12 +354,17 @@ use of dqrng at the C++ level:</p>
 <li>use an R package with <code>LinkingTo: dqrng</code></li>
 </ul>
 <p>The following functions are also available if you include
-<code>dqrng.h</code>.</p>
+<code>dqrng.h</code>. Note that the scalar function
+<code>dqrng::runif</code>, <code>dqrng::rnorm</code>, and
+<code>dqrng::rexp</code> have been deprecated and will be removed in a
+future release. Please use the more flexible and faster
+<code>dqrng::random_64bit_accessor</code> together with
+<code>variate&lt;Dist&gt;()</code> instead.</p>
 <div id="setting-seed-and-rng-type" class="section level2">
 <h2>Setting seed and RNG type</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="dt">void</span> dqrng<span class="op">::</span>dqset_seed<span class="op">(</span>Rcpp<span class="op">::</span>IntegerVector seed<span class="op">,</span> </span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>                       Rcpp<span class="op">::</span>Nullable<span class="op">&lt;</span>Rcpp<span class="op">::</span>IntegerVector<span class="op">&gt;</span> stream <span class="op">=</span> R_NilValue<span class="op">)</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="dt">void</span> dqrng<span class="op">::</span>dqRNGkind<span class="op">(</span><span class="bu">std::</span>string<span class="op"> </span>kind<span class="op">,</span> <span class="at">const</span> <span class="bu">std::</span>string<span class="op">&amp;</span> normal_kind <span class="op">=</span> <span class="st">&quot;ignored&quot;</span><span class="op">)</span></span></code></pre></div>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="dt">void</span> dqrng<span class="op">::</span>dqRNGkind<span class="op">(</span><span class="bu">std::</span>string kind<span class="op">,</span> <span class="at">const</span> <span class="bu">std::</span>string<span class="op">&amp;</span> normal_kind <span class="op">=</span> <span class="st">&quot;ignored&quot;</span><span class="op">)</span></span></code></pre></div>
 <dl>
 <dt><code>seed</code></dt>
 <dd>
@@ -372,7 +377,7 @@ RNG stream to use; length 1 or 2
 <dt><code>kind</code></dt>
 <dd>
 string specifying the RNG, One of “pcg64”, “Xoroshiro128+”,
-“Xoshiro256+” or “Threefry”
+“Xoroshiro128++”, “Xoshiro256+”, “Xoshiro256++” or “Threefry”
 </dd>
 <dt><code>normal-kind</code></dt>
 <dd>
@@ -383,7 +388,7 @@ ignored; included for compatibility with <code>RNGkind</code>
 <div id="random-variates-with-uniform-distribution" class="section level2">
 <h2>Random variates with uniform distribution</h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dqrng<span class="op">::</span>dqrunif<span class="op">(</span><span class="dt">size_t</span> n<span class="op">,</span> <span class="dt">double</span> min <span class="op">=</span> <span class="fl">0.0</span><span class="op">,</span> <span class="dt">double</span> max <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="dt">double</span> dqrng<span class="op">::</span>runif<span class="op">(</span><span class="dt">double</span> min <span class="op">=</span> <span class="fl">0.0</span><span class="op">,</span> <span class="dt">double</span> max <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span></span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>DEPRECATED <span class="dt">double</span> dqrng<span class="op">::</span>runif<span class="op">(</span><span class="dt">double</span> min <span class="op">=</span> <span class="fl">0.0</span><span class="op">,</span> <span class="dt">double</span> max <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span></span></code></pre></div>
 <dl>
 <dt><code>n</code></dt>
 <dd>
@@ -402,7 +407,7 @@ upper limit of the uniform distribution
 <div id="random-variates-with-normal-distribution" class="section level2">
 <h2>Random variates with normal distribution</h2>
 <div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dqrng<span class="op">::</span>dqrnorm<span class="op">(</span><span class="dt">size_t</span> n<span class="op">,</span> <span class="dt">double</span> mean <span class="op">=</span> <span class="fl">0.0</span><span class="op">,</span> <span class="dt">double</span> sd <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="dt">double</span> dqrng<span class="op">::</span>rnorm<span class="op">(</span><span class="dt">double</span> mean <span class="op">=</span> <span class="fl">0.0</span><span class="op">,</span> <span class="dt">double</span> sd <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span></span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>DEPRECATED <span class="dt">double</span> dqrng<span class="op">::</span>rnorm<span class="op">(</span><span class="dt">double</span> mean <span class="op">=</span> <span class="fl">0.0</span><span class="op">,</span> <span class="dt">double</span> sd <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span></span></code></pre></div>
 <dl>
 <dt><code>n</code></dt>
 <dd>
@@ -421,7 +426,7 @@ standard deviation of the normal distribution
 <div id="random-variates-with-exponential-distribution" class="section level2">
 <h2>Random variates with exponential distribution</h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dqrng<span class="op">::</span>dqrexp<span class="op">(</span><span class="dt">size_t</span> n<span class="op">,</span> <span class="dt">double</span> rate <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="dt">double</span> dqrng<span class="op">::</span>rexp<span class="op">(</span><span class="dt">double</span> rate <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span></span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>DEPRECATED <span class="dt">double</span> dqrng<span class="op">::</span>rexp<span class="op">(</span><span class="dt">double</span> rate <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span></span></code></pre></div>
 <dl>
 <dt><code>n</code></dt>
 <dd>
@@ -433,20 +438,30 @@ rate of the exponential distribution
 </dd>
 </dl>
 </div>
+<div id="random-variates-with-rademacher-distribution" class="section level2">
+<h2>Random variates with Rademacher distribution</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>Rcpp<span class="op">::</span>IntegerVector dqrng<span class="op">::</span>dqrrademacher<span class="op">(</span><span class="dt">size_t</span> n<span class="op">)</span></span></code></pre></div>
+<dl>
+<dt><code>n</code></dt>
+<dd>
+number of observations
+</dd>
+</dl>
+</div>
 <div id="random-sampling" class="section level2">
 <h2>Random sampling</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>Rcpp<span class="op">::</span>IntegerVector dqrng<span class="op">::</span>dqsample_int<span class="op">(</span><span class="dt">int</span> m<span class="op">,</span> <span class="dt">int</span> n<span class="op">,</span> <span class="dt">bool</span> replace <span class="op">=</span> <span class="kw">false</span><span class="op">,</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                                        Rcpp<span class="op">::</span>Nullable<span class="op">&lt;</span>Rcpp<span class="op">::</span>NumericVector<span class="op">&gt;</span> probs <span class="op">=</span> R_NilValue<span class="op">,</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>                                        <span class="dt">int</span> offset <span class="op">=</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dqrng<span class="op">::</span>dqsample_num<span class="op">(</span><span class="dt">double</span> m<span class="op">,</span> <span class="dt">double</span> n<span class="op">,</span> <span class="dt">bool</span> replace <span class="op">=</span> <span class="kw">false</span><span class="op">,</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>                                        Rcpp<span class="op">::</span>Nullable<span class="op">&lt;</span>Rcpp<span class="op">::</span>NumericVector<span class="op">&gt;</span> probs <span class="op">=</span> R_NilValue<span class="op">,</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>                                        <span class="dt">int</span> offset <span class="op">=</span> <span class="dv">0</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>Rcpp<span class="op">::</span>IntegerVector dqrng<span class="op">::</span>dqsample_int<span class="op">(</span><span class="dt">int</span> n<span class="op">,</span> <span class="dt">int</span> size<span class="op">,</span> <span class="dt">bool</span> replace <span class="op">=</span> <span class="kw">false</span><span class="op">,</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                                        Rcpp<span class="op">::</span>Nullable<span class="op">&lt;</span>Rcpp<span class="op">::</span>NumericVector<span class="op">&gt;</span> probs <span class="op">=</span> R_NilValue<span class="op">,</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                                        <span class="dt">int</span> offset <span class="op">=</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>Rcpp<span class="op">::</span>NumericVector dqrng<span class="op">::</span>dqsample_num<span class="op">(</span><span class="dt">double</span> n<span class="op">,</span> <span class="dt">double</span> size<span class="op">,</span> <span class="dt">bool</span> replace <span class="op">=</span> <span class="kw">false</span><span class="op">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                                        Rcpp<span class="op">::</span>Nullable<span class="op">&lt;</span>Rcpp<span class="op">::</span>NumericVector<span class="op">&gt;</span> probs <span class="op">=</span> R_NilValue<span class="op">,</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>                                        <span class="dt">int</span> offset <span class="op">=</span> <span class="dv">0</span><span class="op">)</span></span></code></pre></div>
 <dl>
-<dt><code>m</code></dt>
+<dt><code>n</code></dt>
 <dd>
 a positive number, the number of items to choose from
 </dd>
-<dt><code>n</code></dt>
+<dt><code>size</code></dt>
 <dd>
 a non-negative number giving the number of items to choose
 </dd>
@@ -466,6 +481,90 @@ sample from range <code>[offset, offset + m)</code>
 </dl>
 <p>The two functions are used for “normal” and “long-vector” support in
 R.</p>
+</div>
+<div id="getting-and-setting-the-rng-state" class="section level2">
+<h2>Getting and setting the RNG state</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="bu">std::</span>string<span class="op">&gt;</span> dqrng<span class="op">::</span>dqrng_get_state<span class="op">()</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="dt">void</span> dqrng<span class="op">::</span>dqrng_set_state<span class="op">(</span><span class="bu">std::</span>vector<span class="op">&lt;</span><span class="bu">std::</span>string<span class="op">&gt;</span> state<span class="op">)</span></span></code></pre></div>
+<dl>
+<dt><code>state</code></dt>
+<dd>
+a <code>std::vector&lt;std::string&gt;</code> as produced by
+<code>dqrng_get_state()</code>
+</dd>
+</dl>
+</div>
+<div id="accessing-the-global-rng" class="section level2">
+<h2>Accessing the global RNG</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>Rcpp<span class="op">::</span>XPtr<span class="op">&lt;</span>dqrng<span class="op">::</span>random_64bit_generator<span class="op">&gt;</span> dqrng<span class="op">::</span>get_rng<span class="op">()</span></span></code></pre></div>
+<p>Direct usage of this method is <strong>discouraged</strong>. The
+preferred way of accessing the global RNG is to instantiate
+<code>dqrng::random_64bit_accessor</code> within your function. Note
+that you MUST NOT delete the global RNG. Using
+<code>dqrng::random_64bit_accessor</code> makes this impossible. In
+addition, you SHOULD NOT store a reference to the RNG permanently,
+because it can be invalidated by calls to <code>dqRNGkind</code>.
+Therefore, instances of <code>dqrng::random_64bit_accessor</code> SHOULD
+be stored as (non-static) variables in functions.</p>
+<p>Note that <code>dqrng::random_64bit_accessor</code> supports <a href="https://en.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator">UniformRandomBitGenerator</a>
+and can therefore be used together with any C++11 distribution function.
+In addition, the following functions are supported, since they are
+inherited from the abstract parent class
+<code>random_64bit_generator</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co">// clone RNG and select a different stream</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="bu">std::</span>unique_ptr<span class="op">&lt;</span>random_64bit_generator<span class="op">&gt;</span> clone<span class="op">(</span><span class="dt">uint64_t</span> stream<span class="op">)</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">// uniform doubles in [0,1) and double-int-pairs</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="dt">double</span> uniform01<span class="op">()</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="bu">std::</span>pair<span class="op">&lt;</span><span class="dt">double</span><span class="op">,</span> <span class="dt">int</span><span class="op">&gt;</span> generate_double_8bit_pair<span class="op">()</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">// uniform integers in a range </span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="dt">uint32_t</span> <span class="kw">operator</span><span class="op">()</span> <span class="op">(</span><span class="dt">uint32_t</span> range<span class="op">)</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="dt">uint64_t</span> <span class="kw">operator</span><span class="op">()</span> <span class="op">(</span><span class="dt">uint64_t</span> range<span class="op">)</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>ResultType variate<span class="op">&lt;</span>ResultType<span class="op">,</span> DistTmpl<span class="op">&gt;(</span>param1<span class="op">,</span> <span class="op">...</span> paramN<span class="op">)</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>generate<span class="op">&lt;</span>DistTmpl<span class="op">&gt;(</span>container<span class="op">,</span> param1<span class="op">,</span> <span class="op">...</span> paramN<span class="op">)</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>generate<span class="op">&lt;</span>DistTmpl<span class="op">&gt;(</span>start<span class="op">,</span> end<span class="op">,</span> param1<span class="op">,</span> <span class="op">...</span> paramN<span class="op">)</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>Dist<span class="op">::</span><span class="dt">result_type</span> variate<span class="op">&lt;</span>Dist<span class="op">&gt;(</span>param1<span class="op">,</span> <span class="op">...</span> paramN<span class="op">)</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>generate<span class="op">&lt;</span>Dist<span class="op">&gt;(</span>container<span class="op">,</span> param1<span class="op">,</span> <span class="op">...</span> paramN<span class="op">)</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>generate<span class="op">&lt;</span>Dist<span class="op">&gt;(</span>start<span class="op">,</span> end<span class="op">,</span> param1<span class="op">,</span> <span class="op">...</span> paramN<span class="op">)</span></span></code></pre></div>
+<dl>
+<dt><code>stream</code></dt>
+<dd>
+RNG stream to use for the cloned RNG
+</dd>
+<dt><code>range</code></dt>
+<dd>
+Integers are generated in closed interval <code>[0, range]</code>
+</dd>
+<dt><code>ResultType</code></dt>
+<dd>
+Expected result from the distribution template <code>DistTmpl</code>
+</dd>
+<dt><code>DistTmpl</code></dt>
+<dd>
+Distribution template like <code>std::uniform_distribution</code>.
+<code>DistTmpl&lt;ResultType&gt;</code> defines the full distribution.
+</dd>
+<dt><code>Dist</code></dt>
+<dd>
+Full distribution like
+<code>std::uniform_distribution&lt;double&gt;</code> or
+<code>dqrng::normal_distriubtion</code>.
+</dd>
+<dt><code>param1, ... paramN</code></dt>
+<dd>
+Necessary parameters to initialize the distribution.
+</dd>
+<dt><code>container</code></dt>
+<dd>
+A container that is to be filled with variates from the distribution
+function. Needs to support <code>std::begin</code> and
+<code>std::end</code>.
+</dd>
+<dt><code>start, end</code></dt>
+<dd>
+Forward iterators pointing to start and end of a range to be filled with
+variates from the distribution function.
+</dd>
+</dl>
 </div>
 
 

@@ -13,6 +13,18 @@ dqRNGkind <- function(kind, normal_kind = "ignored") {
 
 #' @rdname dqrng-functions
 #' @export
+dqrng_get_state <- function() {
+    .Call(`_dqrng_dqrng_get_state`)
+}
+
+#' @rdname dqrng-functions
+#' @export
+dqrng_set_state <- function(state) {
+    invisible(.Call(`_dqrng_dqrng_set_state`, state))
+}
+
+#' @rdname dqrng-functions
+#' @export
 dqrunif <- function(n, min = 0.0, max = 1.0) {
     .Call(`_dqrng_dqrunif`, n, min, max)
 }
@@ -41,18 +53,23 @@ rexp <- function(rate = 1.0) {
     .Call(`_dqrng_rexp`, rate)
 }
 
+#' @keywords internal
+get_rng <- function() {
+    .Call(`_dqrng_get_rng`)
+}
+
 #' @rdname dqrng-functions
 #' @export
 dqrrademacher <- function(n) {
     .Call(`_dqrng_dqrrademacher`, n)
 }
 
-dqsample_int <- function(m, n, replace = FALSE, probs = NULL, offset = 0L) {
-    .Call(`_dqrng_dqsample_int`, m, n, replace, probs, offset)
+dqsample_int <- function(n, size, replace = FALSE, probs = NULL, offset = 0L) {
+    .Call(`_dqrng_dqsample_int`, n, size, replace, probs, offset)
 }
 
-dqsample_num <- function(m, n, replace = FALSE, probs = NULL, offset = 0L) {
-    .Call(`_dqrng_dqsample_num`, m, n, replace, probs, offset)
+dqsample_num <- function(n, size, replace = FALSE, probs = NULL, offset = 0L) {
+    .Call(`_dqrng_dqsample_num`, n, size, replace, probs, offset)
 }
 
 #' Generate seed as a integer vector

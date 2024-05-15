@@ -1,5 +1,5 @@
 // Copyright 2018-2019 Ralf Stubner (daqana GmbH)
-// Copyright 2022 Ralf Stubner
+// Copyright 2022-2024 Ralf Stubner
 //
 // This file is part of dqrng.
 //
@@ -23,25 +23,11 @@
 #include <dqrng_sample.h>
 #include <xoshiro.h>
 #include <pcg_random.hpp>
-#include <threefry.h>
-#include <convert_seed.h>
-#include <R_randgen.h>
+#include <dqrng_threefry.h>
 
 namespace {
-dqrng::rng64_t init() {
-  Rcpp::RNGScope rngScope;
-  Rcpp::IntegerVector seed(2, dqrng::R_random_int);
-  return dqrng::generator(dqrng::convert_seed<uint64_t>(seed));
-}
-dqrng::rng64_t rng = nullptr;
-
-using generator = double(*)();
-dqrng::uniform_distribution uniform{};
-generator runif_impl = [] () {return uniform(*rng);};
-dqrng::normal_distribution normal{};
-generator rnorm_impl = [] () {return normal(*rng);};
-dqrng::exponential_distribution exponential{};
-generator rexp_impl = [] () {return exponential(*rng);};
+dqrng::rng64_t rng = dqrng::generator(56478348);
+std::string rng_kind = "default";
 }
 
 // [[Rcpp::interfaces(r, cpp)]]
@@ -50,7 +36,7 @@ generator rexp_impl = [] () {return exponential(*rng);};
 void dqset_seed(Rcpp::Nullable<Rcpp::IntegerVector> seed,
                 Rcpp::Nullable<Rcpp::IntegerVector> stream = R_NilValue) {
   if (seed.isNull()) {
-    rng = init();
+    rng = dqrng::generator();
   } else {
     uint64_t _seed = dqrng::convert_seed<uint64_t>(seed.as());
     if (stream.isNotNull()) {
@@ -69,12 +55,17 @@ void dqRNGkind(std::string kind, const std::string& normal_kind = "ignored") {
   for (auto & c: kind)
     c = std::tolower(c);
   uint64_t seed = rng->operator()();
+  rng_kind = kind;
   if (kind == "default") {
     rng =  dqrng::generator(seed);
   } else if (kind == "xoroshiro128+") {
     rng =  dqrng::generator<dqrng::xoroshiro128plus>(seed);
+  } else if (kind == "xoroshiro128++") {
+    rng =  dqrng::generator<dqrng::xoroshiro128plusplus>(seed);
   } else if (kind == "xoshiro256+") {
     rng =  dqrng::generator<dqrng::xoshiro256plus>(seed);
+  } else if (kind == "xoshiro256++") {
+    rng =  dqrng::generator<dqrng::xoshiro256plusplus>(seed);
   } else if (kind == "pcg64") {
     rng =  dqrng::generator<pcg64>(seed);
   } else if (kind == "threefry") {
@@ -82,6 +73,29 @@ void dqRNGkind(std::string kind, const std::string& normal_kind = "ignored") {
   } else {
     Rcpp::stop("Unknown random generator kind: %s", kind);
   }
+}
+
+//' @rdname dqrng-functions
+//' @export
+// [[Rcpp::export(rng = false)]]
+std::vector<std::string> dqrng_get_state() {
+  std::stringstream buffer;
+  buffer << rng_kind << " " << *rng;
+  std::vector<std::string> state{std::istream_iterator<std::string>{buffer},
+                                 std::istream_iterator<std::string>{}};
+  return state;
+}
+
+//' @rdname dqrng-functions
+//' @export
+// [[Rcpp::export(rng = false)]]
+void dqrng_set_state(std::vector<std::string> state) {
+  std::stringstream buffer;
+  std::copy(state.begin() + 1,
+            state.end(),
+            std::ostream_iterator<std::string>(buffer, " "));
+  dqRNGkind(state[0]);
+  buffer >> *rng;
 }
 
 //' @rdname dqrng-functions
@@ -95,9 +109,9 @@ Rcpp::NumericVector dqrunif(size_t n, double min = 0.0, double max = 1.0) {
   if(max / 2. - min / 2. > (std::numeric_limits<double>::max)() / 2.)
     return 2. * dqrunif(n, min/2., max/2.);
 
-  using parm_t = decltype(uniform)::param_type;
-  uniform.param(parm_t(min, max));
-  return Rcpp::NumericVector(n, runif_impl);
+  auto out = Rcpp::NumericVector(Rcpp::no_init(n));
+  rng->generate<dqrng::uniform_distribution>(out, min, max);
+  return out;
 }
 
 // [[Rcpp::export(rng = false)]]
@@ -109,41 +123,41 @@ double runif(double min = 0.0, double max = 1.0) {
   if (max / 2. - min / 2. > (std::numeric_limits<double>::max)() / 2.)
     return 2. * runif(min/2., max/2.);
 
-  using parm_t = decltype(uniform)::param_type;
-  uniform.param(parm_t(min, max));
-  return runif_impl();
+  return rng->variate<dqrng::uniform_distribution>(min, max);;
 }
 
 //' @rdname dqrng-functions
 //' @export
 // [[Rcpp::export(rng = false)]]
 Rcpp::NumericVector dqrnorm(size_t n, double mean = 0.0, double sd = 1.0) {
-  using parm_t = decltype(normal)::param_type;
-  normal.param(parm_t(mean, sd));
-  return Rcpp::NumericVector(n, rnorm_impl);
+  auto out = Rcpp::NumericVector(Rcpp::no_init(n));
+  rng->generate<dqrng::normal_distribution>(out, mean, sd);
+  return out;
 }
 
 // [[Rcpp::export(rng = false)]]
 double rnorm(double mean = 0.0, double sd = 1.0) {
-  using parm_t = decltype(normal)::param_type;
-  normal.param(parm_t(mean, sd));
-  return rnorm_impl();
+  return rng->variate<dqrng::normal_distribution>(mean, sd);;
 }
 
 //' @rdname dqrng-functions
 //' @export
 // [[Rcpp::export(rng = false)]]
 Rcpp::NumericVector dqrexp(size_t n, double rate = 1.0) {
-  using parm_t = decltype(exponential)::param_type;
-  exponential.param(parm_t(rate));
-  return Rcpp::NumericVector(n, rexp_impl);
+  auto out = Rcpp::NumericVector(Rcpp::no_init(n));
+  rng->generate<dqrng::exponential_distribution>(out, rate);
+  return out;
 }
 
 // [[Rcpp::export(rng = false)]]
 double rexp(double rate = 1.0) {
-  using parm_t = decltype(exponential)::param_type;
-  exponential.param(parm_t(rate));
-  return rexp_impl();
+  return rng->variate<dqrng::exponential_distribution>(rate);;
+}
+
+//' @keywords internal
+// [[Rcpp::export(rng = false)]]
+Rcpp::XPtr<dqrng::random_64bit_generator> get_rng() {
+  return Rcpp::XPtr<dqrng::random_64bit_generator>(rng);
 }
 
 //' @rdname dqrng-functions
@@ -169,27 +183,66 @@ Rcpp::IntegerVector dqrrademacher(size_t n) {
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::IntegerVector dqsample_int(int m,
-                                 int n,
+Rcpp::IntegerVector dqsample_int(int n,
+                                 int size,
                                  bool replace = false,
                                  Rcpp::Nullable<Rcpp::NumericVector> probs = R_NilValue,
                                  int offset = 0) {
-    if (!(m > 0 && n >= 0))
-        Rcpp::stop("Argument requirements not fulfilled: m > 0 && n >= 0");
-    return dqrng::sample::sample<INTSXP, uint32_t>(rng, uint32_t(m), uint32_t(n), replace, offset);
+    if (!(n > 0 && size >= 0))
+      Rcpp::stop("Argument requirements not fulfilled: n > 0 && size >= 0");
+    return dqrng::sample::sample<Rcpp::IntegerVector, uint32_t>(*rng, uint32_t(n), uint32_t(size), replace, offset);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::NumericVector dqsample_num(double m,
-                                 double n,
+Rcpp::NumericVector dqsample_num(double n,
+                                 double size,
                                  bool replace = false,
                                  Rcpp::Nullable<Rcpp::NumericVector> probs = R_NilValue,
                                  int offset = 0) {
+    if (!(n > 0 && size >= 0))
+      Rcpp::stop("Argument requirements not fulfilled: n > 0 && size >= 0");
 #ifndef LONG_VECTOR_SUPPORT
     Rcpp::stop("Long vectors are not supported");
 #else
-    if (!(m > 0 && n >= 0))
-        Rcpp::stop("Argument requirements not fulfilled: m > 0 && n >= 0");
-    return dqrng::sample::sample<REALSXP, uint64_t>(rng, uint64_t(m), uint64_t(n), replace, offset);
+    return dqrng::sample::sample<Rcpp::NumericVector, uint64_t>(*rng, uint64_t(n), uint64_t(size), replace, offset);
 #endif
+}
+
+extern "C" {
+// allow registering as user-supplied RNG
+double * user_unif_rand(void) {
+  static double res;
+  res = rng->uniform01();
+  return &res;
+}
+
+// https://stackoverflow.com/a/47839021/8416610
+Int32 unscramble(Int32 u) {
+  for (int j=0; j<50; j++) {
+    u = ((u - 1) * 2783094533);
+  }
+  return u;
+}
+
+void user_unif_init(Int32 seed_in) {
+  rng->seed(uint64_t(unscramble(seed_in)));
+}
+
+double * user_norm_rand(void) {
+  static double res;
+  res = rng->variate<dqrng::normal_distribution>(0.0, 1.0);
+  return &res;
+}
+} // extern "C"
+
+static const R_CMethodDef cMethods[] = {
+  {"user_unif_rand", (DL_FUNC) &user_unif_rand, 0, NULL},
+  {"user_unif_init", (DL_FUNC) &user_unif_init, 0, NULL},
+  {"user_norm_rand", (DL_FUNC) &user_norm_rand, 0, NULL},
+  {NULL, NULL, 0, NULL}
+};
+
+// [[Rcpp::init]]
+void dqrng_init(DllInfo *dll) {
+  R_registerRoutines(dll, cMethods, NULL, NULL, NULL);
 }

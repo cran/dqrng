@@ -1,7 +1,7 @@
 #' @title Multivariate Distributions
 #'
 #' @param n  number of  observations
-#' @param ... forwarded to \code{\link[mvtnorm]{rmvnorm}} or \code{\link[mvtnorm]{rmvt}}
+#' @param ... forwarded to \code{\link[mvtnorm]{rmvnorm}}
 #'
 #' @return numeric matrix of multivariate normal distributed variables
 #' @seealso \code{\link[mvtnorm]{rmvnorm}}
@@ -17,10 +17,7 @@
 #' plot(x)
 dqrmvnorm <- function(n, ...) {
   if (!requireNamespace("mvtnorm", quietly = TRUE)) {
-    stop(
-      "Package \"mvtnorm\" must be installed to use this function.",
-      call. = FALSE
-    )
+    stop("Package \"mvtnorm\" must be installed to use this function.", call. = FALSE)
   }
   mvtnorm::rmvnorm(n, ..., rnorm = dqrnorm)
 }
