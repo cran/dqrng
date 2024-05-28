@@ -100,6 +100,7 @@ inline void random_64bit_wrapper<::dqrng::xoshiro256starstar>::set_stream(result
   gen.long_jump(stream);
 }
 
+#if !(defined(__APPLE__) && defined(__POWERPC__))
 template<>
 inline void random_64bit_wrapper<pcg64>::set_stream(result_type stream) {
   // set the stream relative to the current stream, i.e. stream = 0 does not change the RNG
@@ -112,7 +113,7 @@ inline void random_64bit_wrapper<pcg64>::set_stream(result_type stream) {
     state.push_back(number);
   // state[1] is the current stream
   // PCG will do 2*stream + 1 to make sure stream is odd; need to revert that here
-  gen.set_stream(state[1]/2 + stream);
+  gen.set_stream(state[1]/pcg_extras::pcg128_t(2) + pcg_extras::pcg128_t(stream));
 }
 
 // keep using the two argument ctor for PCG for backwards compatibility
@@ -121,6 +122,7 @@ inline void random_64bit_wrapper<pcg64>::seed(result_type seed, result_type stre
   gen.seed(seed, stream);
   cache = false;
 }
+#endif
 
 inline uint64_t get_seed_from_r() {
   Rcpp::RNGScope rngScope;

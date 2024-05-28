@@ -1,7 +1,7 @@
 Package: dqrng
 Type: Package
 Title: Fast Pseudo Random Number Generators
-Version: 0.4.0
+Version: 0.4.1
 Authors@R: c(
     person("Ralf", "Stubner", email = "ralf.stubner@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0009-0009-1908-106X")),
     person("daqana GmbH", role = "cph"),
@@ -24,9 +24,9 @@ Description: Several fast random number generators are provided as C++
   The fast sampling methods support unweighted sampling both with and without
   replacement. These functions are exported to R and as a C++ interface and are
   enabled for use with the default 64 bit generator from the PCG family,
-  Xoroshiro128+/++ and Xoshiro256+/++ as well as the 64 bit version of the 20
-  rounds Threefry engine (Salmon et al., 2011, <doi:10.1145/2063384.2063405>) as
-  provided by the package 'sitmo'.
+  Xoroshiro128+/++/** and Xoshiro256+/++/** as well as the 64 bit version of the
+  20 rounds Threefry engine (Salmon et al., 2011, <doi:10.1145/2063384.2063405>)
+  as provided by the package 'sitmo'.
 License: AGPL-3
 Depends: R (>= 3.5.0)
 Imports: Rcpp (>= 0.12.16)
@@ -39,7 +39,7 @@ URL: https://daqana.github.io/dqrng/, https://github.com/daqana/dqrng
 BugReports: https://github.com/daqana/dqrng/issues
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2024-05-12 20:42:23 UTC; ralf
+Packaged: 2024-05-28 11:40:30 UTC; ralf
 Author: Ralf Stubner [aut, cre] (<https://orcid.org/0009-0009-1908-106X>),
   daqana GmbH [cph],
   David Blackman [cph] (Xoroshiro / Xoshiro family),
@@ -51,4 +51,4 @@ Author: Ralf Stubner [aut, cre] (<https://orcid.org/0009-0009-1908-106X>),
   Philippe Grosjean [ctb] (<https://orcid.org/0000-0002-2694-9471>)
 Maintainer: Ralf Stubner <ralf.stubner@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-05-15 13:00:07 UTC
+Date/Publication: 2024-05-28 22:40:02 UTC

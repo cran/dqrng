@@ -66,8 +66,10 @@ void dqRNGkind(std::string kind, const std::string& normal_kind = "ignored") {
     rng =  dqrng::generator<dqrng::xoshiro256plus>(seed);
   } else if (kind == "xoshiro256++") {
     rng =  dqrng::generator<dqrng::xoshiro256plusplus>(seed);
+#if !(defined(__APPLE__) && defined(__POWERPC__))
   } else if (kind == "pcg64") {
     rng =  dqrng::generator<pcg64>(seed);
+#endif
   } else if (kind == "threefry") {
     rng =  dqrng::generator<sitmo::threefry_20_64>(seed);
   } else {
@@ -218,8 +220,8 @@ double * user_unif_rand(void) {
 
 // https://stackoverflow.com/a/47839021/8416610
 Int32 unscramble(Int32 u) {
-  for (int j=0; j<50; j++) {
-    u = ((u - 1) * 2783094533);
+  for (int j = 0; j < 50; ++j) {
+    u = ((u - 1) * 2783094533UL);
   }
   return u;
 }

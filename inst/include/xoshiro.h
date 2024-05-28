@@ -16,6 +16,7 @@
 #include <mystdint.h>
 #include <functional>
 #include <algorithm>
+#include <iostream>
 
 namespace dqrng {
 template<size_t N>
@@ -52,7 +53,7 @@ private:
   virtual result_type next() = 0;
 
 public:
-  inline static constexpr result_type min() {return 0.0;};
+  inline static constexpr result_type min() {return 0;};
   inline static constexpr result_type max() {return UINT64_MAX;};
 
   xoshiro(result_type _seed = 0x85c6ea9eb065ebeeULL) {
@@ -107,7 +108,7 @@ template<>
 inline void xoshiro<2>::do_jump(std::array<result_type, 2> JUMP) {
     uint64_t s0 = 0;
     uint64_t s1 = 0;
-    for(unsigned int i = 0; i < sizeof JUMP / sizeof JUMP.begin(); i++)
+    for(int i = 0; i < 2; i++)
       for(int b = 0; b < 64; b++) {
         if (JUMP[i] & UINT64_C(1) << b) {
           s0 ^= s[0];
@@ -126,7 +127,7 @@ inline void xoshiro<4>::do_jump(std::array<result_type, 4> JUMP) {
     uint64_t s1 = 0;
     uint64_t s2 = 0;
     uint64_t s3 = 0;
-    for(unsigned int i = 0; i < sizeof JUMP / sizeof JUMP.begin(); i++)
+    for(int i = 0; i < 4; i++)
       for(int b = 0; b < 64; b++) {
         if (JUMP[i] & UINT64_C(1) << b) {
           s0 ^= s[0];

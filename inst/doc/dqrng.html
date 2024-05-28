@@ -12,7 +12,7 @@
 
 <meta name="author" content="Ralf Stubner" />
 
-<meta name="date" content="2024-05-12" />
+<meta name="date" content="2024-05-28" />
 
 <title>Fast Pseudo Random Number Generators for R</title>
 
@@ -62,7 +62,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -341,7 +341,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Fast Pseudo Random Number Generators for
 R</h1>
 <h4 class="author">Ralf Stubner</h4>
-<h4 class="date">2024-05-12</h4>
+<h4 class="date">2024-05-28</h4>
 
 
 
@@ -401,49 +401,49 @@ the RNG might look like this:</p>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">cat</span>(<span class="st">&quot;pi ~= &quot;</span>, <span class="fu">piR</span>(N), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>))</span>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; pi ~=  3.140899</span></span>
 <span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;   1.288   0.255   1.584</span></span></code></pre></div>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;   0.235   0.068   0.303</span></span></code></pre></div>
 <p>Using dqrng is about three times faster:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(dqrng)</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">dqset.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">cat</span>(<span class="st">&quot;pi ~= &quot;</span>, <span class="fu">piR</span>(N, <span class="at">rng =</span> dqrng<span class="sc">::</span>dqrunif), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>))</span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; pi ~=  3.141457</span></span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;   0.371   0.238   0.622</span></span></code></pre></div>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;   0.109   0.064   0.173</span></span></code></pre></div>
 <p>Since the calculations add a constant off-set, the speed-up for the
 RNGs alone has to be even greater:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">system.time</span>(stats<span class="sc">::</span><span class="fu">runif</span>(N))</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt;   0.384   0.079   0.510</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt;   0.049   0.020   0.069</span></span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">system.time</span>(dqrng<span class="sc">::</span><span class="fu">dqrunif</span>(N))</span>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;   0.047   0.052   0.098</span></span></code></pre></div>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;   0.017   0.012   0.029</span></span></code></pre></div>
 <p>Similar for the exponential distribution:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">system.time</span>(stats<span class="sc">::</span><span class="fu">rexp</span>(N))</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt;   0.633   0.085   0.752</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt;   0.219   0.019   0.238</span></span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">system.time</span>(dqrng<span class="sc">::</span><span class="fu">dqrexp</span>(N))</span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt;   0.101   0.087   0.199</span></span></code></pre></div>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt;   0.028   0.012   0.041</span></span></code></pre></div>
 <p>And for the normal distribution:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">system.time</span>(stats<span class="sc">::</span><span class="fu">rnorm</span>(N))</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt;   0.884   0.102   1.011</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt;   0.173   0.037   0.210</span></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="fu">system.time</span>(dqrng<span class="sc">::</span><span class="fu">dqrnorm</span>(N))</span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt;   0.136   0.047   0.185</span></span></code></pre></div>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt;   0.039   0.015   0.054</span></span></code></pre></div>
 <p>As well as for sampling with and without replacement:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">system.time</span>(<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>)   <span class="fu">sample.int</span>(N, N<span class="sc">/</span><span class="dv">100</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;   0.876   0.033   0.911</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;   0.366   0.007   0.373</span></span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">system.time</span>(<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>) <span class="fu">dqsample.int</span>(N, N<span class="sc">/</span><span class="dv">100</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;   0.055   0.020   0.075</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;   0.014   0.009   0.023</span></span>
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="fu">system.time</span>(<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>)   <span class="fu">sample.int</span>(N, N<span class="sc">/</span><span class="dv">100</span>))</span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;   4.514   2.942   7.828</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;   0.952   0.783   1.735</span></span>
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="fu">system.time</span>(<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>) <span class="fu">dqsample.int</span>(N, N<span class="sc">/</span><span class="dv">100</span>))</span>
 <span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;    user  system elapsed </span></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;   0.264   0.012   0.276</span></span></code></pre></div>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;   0.036   0.008   0.044</span></span></code></pre></div>
 <p>It is also possible to register the supplied generators as
 user-supplied RNGs. This way <code>set.seed()</code> and
 <code>dqset.seed()</code> influence both <code>(dq)runif</code> and
